@@ -1,29 +1,34 @@
 package es.ies.ejercicios.u6.ej65.dip
 
+import es.ies.ejercicios.u6.ej64.PlantillaInforme
 import es.ies.ejercicios.u6.ej64.InformeCsv
+import es.ies.ejercicios.u6.ej64.InformeMarkdown
 import es.ies.ejercicios.u6.ej64.Persona
 import es.ies.ejercicios.u6.ej64.Resumible
 
 /**
- * v0 (viola DIP): un módulo de alto nivel depende de un detalle concreto: [InformeCsv].
- * El ejercicio consiste en introducir una abstracción e inyectar dependencias.
+ * Refactor DIP:
+ * El módulo de alto nivel (Controlador) ya NO hace un "new" a una implementacion como [InformeCsv].
+ * Para cumplir la "Inversion de dependencias", depende de una ABSTRACCIÓN [PlantillaInforme]
+ * que se pasa desde el exterior a través el constructor.
  */
-class ControladorInformesV0 {
-    private val generador = InformeCsv() // detalle concreto
+class ControladorInformes(private val abstraccionGenerador: PlantillaInforme) {
 
     fun imprimirListado(items: List<Resumible>) {
-        val salida = generador.generar("Listado DIP", items)
+        val salida = abstraccionGenerador.generar("Listado DIP Correcto", items)
         println(salida)
     }
 }
 
 fun main() {
-    val controller = ControladorInformesV0()
-    controller.imprimirListado(
-        listOf(
-            Persona("Ana", 20),
-            Persona("Luis", 19),
-        ),
+    val listaBasica = listOf(
+        Persona("Ana", 20),
+        Persona("Luis", 19)
     )
-}
+    
+    val controladorMarkdown = ControladorInformes(InformeMarkdown())
+    controladorMarkdown.imprimirListado(listaBasica)
 
+    val controladorCsv = ControladorInformes(InformeCsv())
+    controladorCsv.imprimirListado(listaBasica)
+}
