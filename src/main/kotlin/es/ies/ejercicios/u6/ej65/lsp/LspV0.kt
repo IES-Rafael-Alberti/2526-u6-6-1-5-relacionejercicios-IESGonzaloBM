@@ -3,42 +3,54 @@ package es.ies.ejercicios.u6.ej65.lsp
 import es.ies.ejercicios.u6.ej64.Persona
 
 /**
- * Contrato: un repositorio que permite guardar y buscar personas.
+ * Refactor LSP:
+ * Separamos la funcionalidad en interfaces por "capacidades" reales.
  */
-open class RepositorioPersonasV0 {
-    private val map = mutableMapOf<String, Persona>()
+interface BuscadorPersonas {
+    fun buscar(nombre: String): Persona?
+}
 
-    open fun guardar(persona: Persona) {
-        map[persona.nombre] = persona
-    }
-
-    open fun buscar(nombre: String): Persona? = map[nombre]
+interface GuardadorPersonas {
+    fun guardar(persona: Persona)
 }
 
 /**
- * v0 (posible violación de LSP): una subclase rompe el contrato esperado de "guardar".
- * El código cliente que acepta [RepositorioPersonasV0] puede fallar al sustituirlo por esta subclase.
+ * Un repositorio normal sabe hacer las dos cosas (buscar y guardar) porque hereda de ambas interfaces.
  */
-class RepositorioSoloLecturaV0 : RepositorioPersonasV0() {
+open class RepositorioPersonasNormal : BuscadorPersonas, GuardadorPersonas {
+    private val map = mutableMapOf<String, Persona>()
+
     override fun guardar(persona: Persona) {
-        throw UnsupportedOperationException("Repositorio en modo solo lectura")
+        map[persona.nombre] = persona
     }
+
+    override fun buscar(nombre: String): Persona? = map[nombre]
 }
 
-fun cliente(repo: RepositorioPersonasV0) {
-    repo.guardar(Persona("Ana", 20))
-    println("Buscar Ana -> ${repo.buscar("Ana")?.resumen()}")
+/**
+ * Un repositorio de "solo lectura" NO engaña al cliente fingiendo saber "guardar".
+ * Únicamente firma el contrato de que sabe que puede "buscar".
+ * Internamente puede leer datos de cualquier sitio preexistente.
+ */
+class RepositorioSoloLectura(private val datosPreexistentes: Map<String, Persona>) : BuscadorPersonas {
+    override fun buscar(nombre: String): Persona? = datosPreexistentes[nombre]
+}
+
+
+fun cliente(repoEscritura: GuardadorPersonas, repoLectura: BuscadorPersonas) {
+    repoEscritura.guardar(Persona("Ana", 20))
+    println("Buscar Ana -> ${repoLectura.buscar("Ana")?.resumen()}")
 }
 
 fun main() {
-    println("[LSP:v0] Repositorio normal (ok)")
-    cliente(RepositorioPersonasV0())
+    println("[LSP] Usando un Repositorio Normal...")
+    val repoFull = RepositorioPersonasNormal()
+    cliente(repoFull, repoFull)
 
-    println("\n[LSP:v0] Repositorio solo lectura (rompe sustitución)")
-    try {
-        cliente(RepositorioSoloLecturaV0())
-    } catch (e: Exception) {
-        println("ERROR: ${e::class.simpleName}: ${e.message}")
-    }
+    println("\n[LSP] Usando un Repositorio Solo Lectura...")
+    val datosBBDD = mapOf("Ana" to Persona("Ana", 20))
+    val repoReadOnly = RepositorioSoloLectura(datosBBDD)
+    
+    println("Buscar Ana de solo-lectura -> ${repoReadOnly.buscar("Ana")?.resumen()}")
 }
 
