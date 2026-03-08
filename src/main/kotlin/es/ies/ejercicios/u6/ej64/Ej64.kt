@@ -37,5 +37,5 @@ fun main() {
     for (item in items) {
         if (item is Persona) registro.registrar(item)
     }
-    println("Buscar 'marta' -> ${registro.buscar("marta")?.resumen()}")
+    println("Buscar marta -> ${registro.buscar("marta")?.resumen()}")
 }
