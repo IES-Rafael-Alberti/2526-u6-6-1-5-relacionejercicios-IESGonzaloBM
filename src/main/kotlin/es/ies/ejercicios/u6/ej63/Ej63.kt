@@ -1,6 +1,9 @@
 package es.ies.ejercicios.u6.ej63
 
-open class Vehiculo(val marca: String, val modelo: String) {
+
+
+open class Vehiculo(val marca: String, val modelo: String) 
+{
     init {
         println("[Vehiculo init] Inicializando superclase Vehiculo: $marca $modelo")
     }
@@ -10,7 +13,8 @@ open class Vehiculo(val marca: String, val modelo: String) {
     }
 }
 
-class Coche(marca: String, modelo: String, val numeroPuertas: Int) : Vehiculo(marca, modelo) {
+class Coche(marca: String, modelo: String, val numeroPuertas: Int) : Vehiculo(marca, modelo) 
+{
     init {
         println("[Coche init] Inicializando coche de $numeroPuertas puertas")
     }
@@ -20,7 +24,8 @@ class Coche(marca: String, modelo: String, val numeroPuertas: Int) : Vehiculo(ma
     }
 }
 
-class Moto(marca: String, modelo: String, val cilindrada: Int) : Vehiculo(marca, modelo) {
+class Moto(marca: String, modelo: String, val cilindrada: Int) : Vehiculo(marca, modelo) 
+{
     init {
         println("[Moto init] Inicializando moto de ${cilindrada}cc")
     }
@@ -30,24 +35,27 @@ class Moto(marca: String, modelo: String, val cilindrada: Int) : Vehiculo(marca,
     }
 }
 
-class Camion : Vehiculo {
+class Camion : Vehiculo 
+{
     val capacidadCargaToneladas: Double
 
     constructor(marca: String, modelo: String, carga: Double) : super(marca, modelo) {
         this.capacidadCargaToneladas = carga
-        println("[Camion constructor secundario] Llamó a 'super(marca, modelo)' y luego finalizó. Carga: $carga t")
+        println("[Camion constructor secundario] Llamo a super(marca, modelo). Carga: $carga t")
     }
     
     constructor(marca: String) : super(marca) {
         this.capacidadCargaToneladas = 3.5
-        println("[Camion constructor secundario] Llamó a 'super(marca)' (secundario del padre). Carga: 3.5 t")
+        println("[Camion constructor secundario] Llamo a super(marca). Carga: 3.5 t")
     }
 }
 
-/**
- * Ejercicio 6.3 — Incidencia de constructores en la herencia (RA7.c).
- */
-fun main(args: Array<String>) {
+
+
+
+
+fun main() 
+{
     println("1. Instanciando Coche (Primario)")
     val miCoche1 = Coche("Toyota", "Corolla", 5)
 
